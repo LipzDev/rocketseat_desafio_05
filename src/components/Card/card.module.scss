@@ -1,0 +1,16 @@
+.wrapper{
+  cursor: pointer;
+
+  p{
+    margin: 10px 0 20px 0;
+  }
+}
+
+.postInfo{
+  display: flex;
+  align-items: center;
+
+  div + div{
+    margin-left: 30px;
+  }
+}
