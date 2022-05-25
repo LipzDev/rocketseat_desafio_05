@@ -1,6 +1,8 @@
+/* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/no-array-index-key */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { GetStaticProps } from 'next';
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 import Card from '../components/Card';
 import Header from '../components/Header';
 
@@ -28,63 +30,24 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-const mock = [
-  {
-    title: 'Como utilizar Hooks',
-    subtitle: 'Pensando em sincronização em vez de ciclos de vida.',
-    author: 'Joseph Oliveira',
-    createdAt: '15 Mar 2021',
-    slug: 'como-utilizar-hooks',
-  },
-  {
-    title: 'Como utilizar Hooks',
-    subtitle: 'Pensando em sincronização em vez de ciclos de vida.',
-    author: 'Joseph Oliveira',
-    createdAt: '15 Mar 2021',
-    slug: 'como-utilizar-hooks',
-  },
-  {
-    title: 'Como utilizar Hooks',
-    subtitle: 'Pensando em sincronização em vez de ciclos de vida.',
-    author: 'Joseph Oliveira',
-    createdAt: '15 Mar 2021',
-    slug: 'como-utilizar-hooks',
-  },
-  {
-    title: 'Como utilizar Hooks',
-    subtitle: 'Pensando em sincronização em vez de ciclos de vida.',
-    author: 'Joseph Oliveira',
-    createdAt: '15 Mar 2021',
-    slug: 'como-utilizar-hooks',
-  },
-  {
-    title: 'Como utilizar Hooks',
-    subtitle: 'Pensando em sincronização em vez de ciclos de vida.',
-    author: 'Joseph Oliveira',
-    createdAt: '15 Mar 2021',
-    slug: 'como-utilizar-hooks',
-  },
-  {
-    title: 'Como utilizar Hooks',
-    subtitle: 'Pensando em sincronização em vez de ciclos de vida.',
-    author: 'Joseph Oliveira',
-    createdAt: '15 Mar 2021',
-    slug: 'como-utilizar-hooks',
-  },
-];
-
-export default function Home() {
+export default function Home({ results }: PostPagination): JSX.Element {
   return (
     <div className={commonStyles.container}>
       <Header />
-      {mock.map((data, index) => (
-        <div className={styles.wrapper}>
+      {results?.map((content: Post, index: number) => (
+        <div className={styles.wrapper} key={index}>
           <Card
-            key={index}
-            title={data.title}
-            subtitle={data.subtitle}
-            createdAt={data.createdAt}
-            author={data.author}
+            title={content?.data.title}
+            subtitle={content?.data.subtitle}
+            author={content?.data.author}
+            createdAt={format(
+              new Date(content?.first_publication_date),
+              'dd MMMM yyyy',
+              {
+                locale: ptBR,
+              }
+            )}
+            slug={content?.uid}
           />
         </div>
       ))}
@@ -96,9 +59,12 @@ export default function Home() {
   );
 }
 
-// export const getStaticProps = async () => {
-//   // const prismic = getPrismicClient({});
-//   // const postsResponse = await prismic.getByType(TODO);
+export const getStaticProps: GetStaticProps = async () => {
+  const prismic = getPrismicClient({});
+  const postsResponse = await prismic.getByType('posts');
 
-//   // TODO
-// };
+  return {
+    props: postsResponse,
+    revalidate: 60,
+  };
+};

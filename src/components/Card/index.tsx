@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Author from '../Author';
 import Date from '../Date';
 import styles from './card.module.scss';
@@ -7,6 +8,7 @@ interface CardProps {
   subtitle: string;
   author: string;
   createdAt: string;
+  slug: string;
 }
 
 const Card = ({
@@ -14,17 +16,20 @@ const Card = ({
   subtitle,
   createdAt,
   author,
+  slug,
 }: CardProps): JSX.Element => {
   return (
-    <div className={styles.wrapper}>
-      <h1>{title}</h1>
-      <p>{subtitle}</p>
+    <Link href={slug || ''}>
+      <div className={styles.wrapper}>
+        <h1>{title}</h1>
+        <p>{subtitle}</p>
 
-      <div className={styles.postInfo}>
-        <Date timestamp={createdAt} />
-        <Author name={author} />
+        <div className={styles.postInfo}>
+          <Date timestamp={createdAt} />
+          <Author name={author} />
+        </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
